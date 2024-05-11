@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polygon Mapping</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<style>
+    #map {
+        height: 400px;
+    }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+   $(document).ready(function(){
+    var map = L.map('map').setView([2.9355, 97.4767], 12); // Set initial map view
+
+    // Add base layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    // Load GeoJSON data from file path
+    $.ajax({
+        dataType: "json",
+        url: "file:///C:/Users/Anan/Downloads/indonesia_villages_border.geojson", // Replace with your file path
+        success: function(data) {
+            // Add GeoJSON layer to the map
+            L.geoJSON(data, {
+                style: function(feature) {
+                    return {color: 'blue'}; // Style for the polygons
+                },
+                onEachFeature: function(feature, layer) {
+                    // Add popup with village name
+                    if (feature.properties && feature.properties.name) {
+                        layer.bindPopup(feature.properties.name);
+                    }
+                }
+            }).addTo(map);
+        }
+    });
+});
+
+
+</script>
+
+</body>
+</html>
