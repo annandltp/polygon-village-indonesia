@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Contoh Penggunaan Polygon dengan Google Maps</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjmNP3_sji6A_dyyH3Gn_lgihPOygoKTY"></script>
+    <!-- <script src="C:\Users\Anan\Desktop\Make Dashboard NJOP\output.js"></script> -->
+    <script src="C:\Users\Anan\Desktop\Make Dashboard NJOP\Village_DKI JAKARTA.js"></script>
+    <!-- <script src="C:\Users\Anan\Desktop\Make Dashboard NJOP\Village_Aceh.js"></script> -->
+    <!-- <script src="C:\Users\Anan\Desktop\Make Dashboard NJOP\Village_Bali.js"></script> -->
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        #searchInput {
+            width: 300px;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        #legend {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            z-index: 1000;
+            display: none;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        #toggleButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <input id="searchInput" type="text" placeholder="Search for a city">
+    <div id="map"></div>
+    <button id="toggleButton">Show Legend</button>
+    <div id="legend">
+        <h4>Legend</h4>
+        <div>
+            <span
+                style="background-color: black; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></span>
+            <span>Nilai sampai 100.000</span>
+        </div>
+        <div>
+            <span
+                style="background-color: green; width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></span>
+            <span>Nilai 100.000 - 200.000</span>
+        </div>
+    </div>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjmNP3_sji6A_dyyH3Gn_lgihPOygoKTY&libraries=places&callback=initMap">
+        </script>
+    <script>
+        var map;
+        var geojsonData = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": []
+                    },
+                    "properties": {
+                        "province": "",
+                        "district": "",
+                        "sub_district": "",
+                        "village": ""
+                    }
+                }
+            ]
+        }
+
+        var features = geojsonData.features;
+        var geoJSON = [];
+        var results = [];
+
+        var startColor = [255, 0, 0];
+        var endColor = [124, 0, 0];
+
+        geoJSON.type = "FeatureCollection";
+        geoJSON.features = results;
+
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        legend.style.backgroundColor = '#fff';
+        legend.style.padding = '10px';
+        legend.style.borderRadius = '5px';
+        legend.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+        legend.style.position = 'absolute';
+        legend.style.top = '20px';
+        legend.style.width = '200px';
+        legend.style.right = '20px';
+        legend.style.zIndex = '1000';
+
+        var legendTitle = document.createElement('div');
+        legendTitle.innerHTML = '<h4>Legend</h4>';
+        legend.appendChild(legendTitle);
+
+        var legendItem = document.getElementById('legend');
+
+        var legendData = [
+            { color: '#CFFFD2', text: 'Nilai Sampai 100.000' },
+            { color: '#83D380', text: 'Nilai 100.000 - 200.000' },
+            { color: '#5AB258', text: 'Nilai 200.000 - 500.000' },
+            { color: '#3A9437', text: 'Nilai 500.000 - 1.000.000' },
+            { color: '#227120', text: 'Nilai 1.000.000 - 2.000.000' },
+            { color: '#0E4B0C', text: 'Nilai 2.000.000 - 5.000.000' },
+            { color: '#A4B53B', text: 'Nilai 5.000.000 - 20.000.000' },
+            { color: '#75831B', text: 'Nilai 20.000.000 - 50.000.000' },
+            { color: '#34371C', text: 'Nilai Lebih Dari 50.000.000' }
+        ];
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -6.2088, lng: 106.8456 },
+                fullscreenControl: false,
+                zoom: 12
+            });
+
+            for (var i = 0; i < data.length; i++) {
+                var feature = data[i];
+
+                var province = data[i].province;
+                var district = data[i].district;
+                var sub_district = data[i].sub_district;
+                var village = data[i].village;
+                var coordinates = data[i].border;
+                var population = data[i].population;
+                var fillColorRGB = "";
+
+                if (population <= 100000) {
+                    fillColorRGB = "#CFFFD2";
+                } else if (population >= 100000 && population <= 200000) {
+                    fillColorRGB = "#83D380";
+                } else if (population >= 200000 && population <= 500000) {
+                    fillColorRGB = "#5AB258";
+                } else if (population >= 500000 && population <= 1000000) {
+                    fillColorRGB = "#3A9437";
+                } else if (population >= 1000000 && population <= 2000000) {
+                    fillColorRGB = "#227120";
+                } else if (population >= 2000000 && population <= 5000000) {
+                    fillColorRGB = "#0E4B0C";
+                } else if (population >= 5000000 && population <= 20000000) {
+                    fillColorRGB = "#A4B53B";
+                } else if (population >= 20000000 && population <= 50000000) {
+                    fillColorRGB = "#75831B";
+                } else if (population >= 50000000) {
+                    fillColorRGB = "#34371C";
+                } else {
+                    fillColorRGB = "yellow"
+                }
+
+                results.push({
+                    type: "Feature",
+                    geometry: {
+                        type: "Polygon",
+                        coordinates: [JSON.parse(coordinates)]
+                    },
+                    properties: {
+                        province: province,
+                        district: district,
+                        sub_district: sub_district,
+                        village: village,
+                        population: population,
+                        fillColor: fillColorRGB
+                    }
+                });
+            }
+
+            geoJSON.features.forEach(function (feature) {
+                var coordinates = feature.geometry.coordinates[0].map(function (coord) {
+                    if (typeof coord[0] !== 'number' || typeof coord[1] !== 'number' || isNaN(coord[0]) || isNaN(coord[1])) {
+                        return { lat: 0, lng: 0 };
+                    }
+                    return { lat: coord[1], lng: coord[0] };
+                });
+
+                var polygon = new google.maps.Polygon({
+                    paths: coordinates,
+                    strokeColor: '#FD7D68',
+                    fillColor: feature.properties.fillColor,
+                    fillOpacity: 0.8
+                });
+
+                var bounds = new google.maps.LatLngBounds();
+                polygon.getPath().forEach(function (point) {
+                    bounds.extend(point);
+                });
+                var centerPosition = bounds.getCenter();
+
+                if (centerPosition.lat() !== 0) {
+                    var infoWindow = new google.maps.InfoWindow({
+                        ariaLabel: "Uluru",
+                        content: feature.properties.village
+                    });
+
+                    google.maps.event.addListener(polygon, 'click', function (event) {
+                        infoWindow.setPosition(event.latLng);
+                        infoWindow.open(map);
+                    });
+                }
+                polygon.setMap(map);
+
+                var villageName = feature.properties.village;
+
+            });
+
+
+
+            for (var i = 0; i < legendData.length; i++) {
+                var legendItem = document.createElement('div');
+
+                var colorSpan = document.createElement('span');
+                colorSpan.style.backgroundColor = legendData[i].color;
+                colorSpan.style.width = '20px';
+                colorSpan.style.height = '20px';
+                colorSpan.style.display = 'inline-block';
+                colorSpan.style.marginRight = '5px';
+
+                var textSpan = document.createElement('span');
+                textSpan.innerText = legendData[i].text;
+                textSpan.style.backgroundColor = '#fff';
+                textSpan.style.marginRight = '5px';
+
+                legendItem.appendChild(colorSpan);
+                legendItem.appendChild(textSpan);
+                legend.appendChild(legendItem);
+            }
+
+            map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
+
+
+            // Toggle button functionality
+            const toggleButton = document.getElementById('toggleButton');
+            toggleButton.addEventListener('click', function () {
+                if (legend.style.display === 'none') {
+                    legend.style.display = 'block';
+                    toggleButton.textContent = 'Hide Legend';
+                } else {
+                    legend.style.display = 'none';
+                    toggleButton.textContent = 'Show Legend';
+                }
+            });
+
+
+            const input = document.getElementById("searchInput");
+            const searchBox = new google.maps.places.SearchBox(input);
+
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+            map.addListener("bounds_changed", () => {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            let markers = [];
+
+            searchBox.addListener("places_changed", () => {
+                const places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                // Clear out the old markers.
+                markers.forEach((marker) => {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                // For each place, get the icon, name and location.
+                const bounds = new google.maps.LatLngBounds();
+
+                places.forEach((place) => {
+                    if (!place.geometry || !place.geometry.location) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+
+                    const icon = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25),
+                    };
+
+                    // Create a marker for each place.
+                    markers.push(
+                        new google.maps.Marker({
+                            map,
+                            icon,
+                            title: place.name,
+                            position: place.geometry.location,
+                        }),
+                    );
+                    if (place.geometry.viewport) {
+                        // Only geocodes have viewport.
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
+        }
+    </script>
+</body>
+
+</html>
