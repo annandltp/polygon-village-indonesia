@@ -1,3 +1,6 @@
+download: https://github.com/pararawendy/border-desa-indonesia-geojson
 1. select data which you want to select
 2. copy data from sql to excel
 3. execute command in python
+
+tutorial: https://youtu.be/JwpXHkAr8Sw?si=ZrrqPZm9DVTpjFC_
